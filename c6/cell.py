@@ -57,6 +57,13 @@ class Cell:
             speed=np.abs(np.random.normal(0.1, 0.01)),
             radius=2,
             age=0,
+            growth_rate=0.1,
+            growth_var=0.5,
+            min_growth=0.01,
+            min_radius=2.0,
+            max_radius=3.0,
+            mitosis_50=2.8,
+            mitosis_steepness=0.1,
             sensing=5,
             influence_max=10,
             influence_decay=2,
@@ -81,6 +88,31 @@ class Cell:
     def _from_serializeable_dict(self, props):
         """Set values from the passed property dict"""
         self.__dict__.update((k, v) for k, v in props.items() if k in self._allowed)
+
+    def _grow(self):
+        """Get bigger according to current/min/max sizes, growth rate, and growth variance.
+        """
+        # Local copies of variables for readability
+        r, r_min, r_max = self.radius, self.min_radius, self.max_radius
+        g_rate, g_var = self.growth_rate, self.growth_var
+        # Benavides: within size, grow, out of size, the law (of min growth)
+        if r < r_min or r > r_max:
+            return r + self.min_growth
+        # Allow variability in growth rates
+        if g_var is not None:
+            g_rate *= np.random.normal(1.0, g_rate * g_var)
+        # Calculate change and add to current radius
+        change = g_rate * (r - r_min) * (1 - (r - r_min) / (r_max - r_min))
+        change = np.clip(change, self.min_growth, np.inf)
+        self.radius += change
+
+    def _check_mitosis(self):
+        """Should we undergo mitosis now?
+        This is implicitly calculated relative to a rate per timestep.
+        """
+        m_50, steep = self.mitosis_50, self.mitosis_steepness
+        p = 0.5 * (1 + np.tanh((self.radius - m_50) / steep))
+        return np.random.rand() < p
 
     def _nearby_cells(self, dist):
         """Find cells within dist of this cell's location"""
@@ -139,6 +171,12 @@ class Cell:
             self._repel(other)
 
     def step(self):
+        # Age and grow
+        self.age += 1
+        self._grow()
+        if self._check_mitosis() is True:
+            # self._divide()
+            return  # daughter cells do next steps
         # Perturb the direction and speed
         self._steer()
         self._accelerate()
@@ -146,5 +184,3 @@ class Cell:
         self.loc += self.speed * self.dir
         # Apply exclusion
         self._exclude()
-        # Age
-        self.age += 1

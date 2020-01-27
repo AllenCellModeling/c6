@@ -117,6 +117,13 @@ def write_starting_conditions(
     # Create default universal and per-cell keys
     if universal_keys is None:
         universal_keys = (
+            "growth_rate",
+            "growth_var",
+            "min_growth",
+            "min_radius",
+            "max_radius",
+            "mitosis_50",
+            "mitosis_steepness",
             "sensing",
             "influence_max",
             "influence_decay",

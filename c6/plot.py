@@ -20,6 +20,7 @@ def plot_cells(cells, ax):
     else:
         for cell in cells:
             pe, pc = cell._patches
+            pe.radius = cell.radius
             pe.xy = cell.loc
             pc.xy = cell.loc
 
