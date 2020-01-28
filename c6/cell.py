@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import copy
 import uuid
 import numpy as np
 
@@ -10,7 +11,7 @@ from .utils.encoding import NumpyToCore
 class Cell:
     """A circular cell that meanders about"""
 
-    def __init__(self, space=None, loc=[0, 0], **kwargs):
+    def __init__(self, space=None, loc=[0, 0], radius=2, **kwargs):
         """Create our circular cell.
 
         Parameters
@@ -19,12 +20,12 @@ class Cell:
             a parent space, default is None
         loc: 2 tuple
             starting xy location of this cell, (default 0,0)
+        radius: float
+            cell size
         dir: 2 tuple
             initial direction of movement
         speed: float
             initial migratory speed
-        radius: float
-            cell size
         age: int
             how many timesteps old this cell is
         sensing: float
@@ -49,13 +50,13 @@ class Cell:
         """
         if space is not None:
             space.cells.append(self)
-        self.space = space
         # Set default values
         defaults = dict(
+            space=space,
             loc=loc,
-            dir=np.random.normal(size=2),  # will get normed on first steer
+            radius=radius,
+            dir=np.random.normal(size=2),  # gets normed below
             speed=np.abs(np.random.normal(0.1, 0.01)),
-            radius=2,
             age=0,
             growth_rate=0.1,
             growth_var=0.5,
@@ -106,13 +107,41 @@ class Cell:
         change = np.clip(change, self.min_growth, np.inf)
         self.radius += change
 
-    def _check_mitosis(self):
+    def _undergo_mitosis(self):
         """Should we undergo mitosis now?
         This is implicitly calculated relative to a rate per timestep.
         """
         m_50, steep = self.mitosis_50, self.mitosis_steepness
         p = 0.5 * (1 + np.tanh((self.radius - m_50) / steep))
         return np.random.rand() < p
+
+    def _divide(self):
+        """Undergo mitosis, creating two daughter cells"""
+        # Conserve volume
+        rad = self.radius / np.sqrt(2)
+        # One daughter goes in direction parent was, one in opposite
+        dirs = self.dir, -self.dir
+        locs = [self.loc + dir * rad for dir in dirs]
+        dicts = [
+            dict(age=0, radius=rad, parent=self.id, dir=dir, loc=loc)
+            for dir, loc in zip(dirs, locs)
+        ]
+        # Start with defaults from parent cell, but make daughters create new ids
+        defaults = copy.copy(self.__dict__)
+        defaults.pop("id")
+        # Create new cells, delete the old
+        for new_dict in dicts:
+            defaults.update(new_dict)
+            Cell(**defaults)
+        self.remove()
+        return
+
+    def remove(self, callback=None):
+        """Remove self from simulation"""
+        if self.space is not None:
+            self.space.cells.remove(self)
+        if callback is not None:
+            callback(self)
 
     def _nearby_cells(self, dist):
         """Find cells within dist of this cell's location"""
@@ -174,8 +203,8 @@ class Cell:
         # Age and grow
         self.age += 1
         self._grow()
-        if self._check_mitosis() is True:
-            # self._divide()
+        if self._undergo_mitosis():
+            self._divide()
             return  # daughter cells do next steps
         # Perturb the direction and speed
         self._steer()
