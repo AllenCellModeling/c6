@@ -48,8 +48,6 @@ class Cell:
 
         .. _exponential decay: http://mathworld.wolfram.com/ExponentialDecay.html
         """
-        if space is not None:
-            space.cells.append(self)
         # Set default values
         defaults = dict(
             space=space,
@@ -62,8 +60,8 @@ class Cell:
             growth_var=0.5,
             min_growth=0.01,
             min_radius=2.0,
-            max_radius=3.0,
-            mitosis_50=2.8,
+            max_radius=3.5,
+            mitosis_50=3.3,
             mitosis_steepness=0.1,
             sensing=5,
             influence_max=10,
@@ -81,6 +79,9 @@ class Cell:
         self._allowed = list(defaults.keys())
         defaults.update(kwargs)
         self.__dict__.update((k, v) for k, v in defaults.items() if k in self._allowed)
+        # Add cell to space
+        if space is not None:
+            space.add_cell(self)
 
     def _to_serializeable_dict(self):
         """State of the cell, anything we can set"""
@@ -136,12 +137,10 @@ class Cell:
         self.remove()
         return
 
-    def remove(self, callback=None):
+    def remove(self):
         """Remove self from simulation"""
         if self.space is not None:
-            self.space.cells.remove(self)
-        if callback is not None:
-            callback(self)
+            self.space.remove_cell(self)
 
     def _nearby_cells(self, dist):
         """Find cells within dist of this cell's location"""

@@ -18,10 +18,23 @@ class Space:
         """Quick plot cells onto a provided matplotlib axis"""
         plot_cells(self.cells, ax)
 
-    def step(self):
-        """Tell every cell to go through one time step"""
+    def add_cell(self, cell):
+        """Add cell and regenerate distance tree"""
+        self.cells.append(cell)
+        self._generate_distance_map()
+
+    def remove_cell(self, cell):
+        """Remove cell and regenerate distance tree"""
+        self.cells.remove(cell)
+        self._generate_distance_map()
+
+    def _generate_distance_map(self):
         locs = np.array([cell.loc for cell in self.cells])
         self.tree = sklearn.neighbors.KDTree(locs)
+
+    def step(self):
+        """Tell every cell to go through one time step"""
+        self._generate_distance_map()
         for cell in self.cells:
             cell.step()
         self.timestep += 1
