@@ -17,9 +17,7 @@ test_requirements = [
     "pytest-raises",
 ]
 
-setup_requirements = [
-    "pytest-runner",
-]
+setup_requirements = ["pytest-runner"]
 
 dev_requirements = [
     "bumpversion>=0.5.3",
@@ -38,13 +36,9 @@ dev_requirements = [
     "wheel>=0.33.1",
 ]
 
-interactive_requirements = [
-    "altair",
-    "jupyterlab",
-    "matplotlib",
-]
+interactive_requirements = ["jupyterlab"]
 
-requirements = []
+requirements = ["matplotlib", "sklearn"]
 
 extra_requirements = {
     "test": test_requirements,
@@ -56,8 +50,8 @@ extra_requirements = {
         *test_requirements,
         *setup_requirements,
         *dev_requirements,
-        *interactive_requirements
-    ]
+        *interactive_requirements,
+    ],
 }
 
 setup(
@@ -71,11 +65,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="A toy center-based model of initial clustering",
-    entry_points={
-        "console_scripts": [
-            "my_example=c6.bin.my_example:main"
-        ],
-    },
+    entry_points={"console_scripts": ["my_example=c6.bin.my_example:main"]},
     install_requires=requirements,
     license="Allen Institute Software License",
     long_description=readme,
