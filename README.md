@@ -6,11 +6,22 @@
 
 C6 is a toy center-based model of the initial clustering that occurs as a cells aggregate after replating. 
 
+
 ---
 
 ## Features
-* Store values and retain the prior value in memory
-* ... some other functionality
+- [x] Represents cells as non-overlapping circles
+- [x] Cells exclude each other
+- [x] Cells sense each other with tunable strength and distances
+- [x] Cells grow at tunable rates
+- [x] Cells divide at tunable sizes
+- [ ] Cells' growth is contact inhibited
+- [x] Runs are launched from stored initial conditions
+- [x] Runs are selectable as deterministic or stochastic 
+- [x] Runs are logged to tidy data file
+- [x] Run state is visualized
+- [x] You can save run states out to pretty MP4s
+- [ ] Summary statistics are available for probing run logs
 
 ## Quick Start
 ```python
