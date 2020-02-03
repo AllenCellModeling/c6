@@ -6,6 +6,7 @@ import uuid
 import numpy as np
 
 from .utils.encoding import NumpyToCore
+from .utils.math import clip, norm
 
 
 class Cell:
@@ -105,7 +106,7 @@ class Cell:
             g_rate *= np.random.normal(1.0, g_rate * g_var)
         # Calculate change and add to current radius
         change = g_rate * (r - r_min) * (1 - (r - r_min) / (r_max - r_min))
-        change = np.clip(change, self.min_growth, np.inf)
+        change = clip(change, self.min_growth, np.inf)
         self.radius += change
 
     def _undergo_mitosis(self):
@@ -153,25 +154,25 @@ class Cell:
         """Randomly migrate, subject to the influence from nearby cells"""
         # Perturb the direction a bit
         self.dir += np.random.normal(0, self.direction_dispersion, 2)
-        self.dir /= np.linalg.norm(self.dir)
+        self.dir /= norm(self.dir)
         # Find vectors to nearby cells
         others = self._nearby_cells(self.sensing)
         alter_by = np.zeros(2)
         for oc in others:
             vec = oc.loc - self.loc
-            center_dist = np.linalg.norm(vec)
+            center_dist = norm(vec)
             surface_dist = center_dist - (self.radius + oc.radius)
             i_max, i_decay = self.influence_max, self.influence_decay
             influence = i_max * np.exp(-surface_dist * i_decay)
-            influence = np.clip(influence, 0, i_max)  # slight overlap
+            influence = clip(influence, 0, i_max)  # slight overlap
             alter_by += vec / center_dist * influence
         self.dir += alter_by
-        self.dir /= np.linalg.norm(self.dir)
+        self.dir /= norm(self.dir)
 
     def _accelerate(self):
         """Perturb the speed a bit"""
         self.speed += np.random.normal(0, self.speed_dispersion)
-        self.speed = np.clip(self.speed, 0, self.max_speed)
+        self.speed = clip(self.speed, 0, self.max_speed)
 
     def _ljf(self, dist):
         """Lennard-Jones force (derivative of Lennard-Jones potential"""
@@ -183,9 +184,10 @@ class Cell:
     def _repel(self, other_cell):
         """Two cells shouldn't overlap"""
         vec = other_cell.loc - self.loc
-        dist = np.linalg.norm(vec)
+        dist = norm(vec)
         mag = other_cell._ljf(dist - self.radius) + self._ljf(dist - other_cell.radius)
-        f_vec = np.clip(mag, -self.repel_limit, self.repel_limit) * vec / dist
+        mag = clip(mag, -self.repel_limit, self.repel_limit)
+        f_vec = mag * vec / dist
         self.loc += f_vec
         if mag > self.repel_limit or mag < -self.repel_limit:
             self._repel(other_cell)
