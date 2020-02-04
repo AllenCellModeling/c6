@@ -11,7 +11,7 @@ import matplotlib.animation
 
 def plot_cells(cells, ax):
     for cell in cells:
-        if hasattr(cell, "_patches"):
+        if hasattr(cell, "_patches") and cell._patches[0] in ax.patches:
             pe, pc = cell._patches
             pe.radius = cell.radius
             pe.xy = cell.loc
