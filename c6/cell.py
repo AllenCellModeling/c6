@@ -63,6 +63,9 @@ class Cell:
             min_growth=0.01,
             min_radius=2.0,
             max_radius=3.5,
+            inhibition_n=4,
+            inhibition_50=6,
+            inhibition_steepness=3,
             mitosis_50=3.3,
             mitosis_steepness=0.1,
             sensing=5,
@@ -108,7 +111,26 @@ class Cell:
         # Calculate change and add to current radius
         change = g_rate * (r - r_min) * (1 - (r - r_min) / (r_max - r_min))
         change = clip(change, self.min_growth, np.inf)
+        change *= self._contact_inhibit()
         self.radius += change
+
+    def _contact_inhibit(self):
+        """Inhibit growth on contact.
+        I would like to include `area dependent inhibition`_ but am unable to
+        without accounting for cell area and volume separately.
+
+        .. _area dependent inhibition: https://www.pnas.org/content/109/3/739
+        """
+        # Find n nearest cells and sum of distances
+        nearest = self._n_nearest_cells(self.inhibition_n)
+        if len(nearest) != self.inhibition_n:  #  no space or no other cells
+            return 1.0
+        distance = sum(
+            [norm(oc.loc - self.loc) - oc.radius - self.radius for oc in nearest]
+        )
+        # Find inhibition based on sum of distances
+        steep, center = self.inhibition_steepness, self.inhibition_50
+        return 1 / (1 + math.exp(-steep * (distance - center) / self.radius))
 
     def _undergo_mitosis(self):
         """Should we undergo mitosis now?
@@ -148,6 +170,13 @@ class Cell:
         """Find cells within dist of this cell's location"""
         if self.space is not None:
             return self.space.within(self, dist)
+        else:
+            return []
+
+    def _n_nearest_cells(self, n):
+        """Find the n nearest cells"""
+        if self.space is not None:
+            return self.space.nearest(self, n)
         else:
             return []
 

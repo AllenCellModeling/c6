@@ -44,9 +44,20 @@ class Space:
         Must call `step` first to generate search tree.
         """
         near = self.tree.query_radius(cell.loc.reshape(1, -1), rad)
-        if near is None:
+        return self._not_original_cell(near, cell)
+
+    def nearest(self, cell, n=1):
+        """The n nearest cells to a given cell
+        Must call `step` first to generate search tree.
+        """
+        near = self.tree.query(cell.loc.reshape(1, -1), n + 1, False)
+        return self._not_original_cell(near, cell)
+
+    def _not_original_cell(self, tree_results, cell):
+        """Return the tree results that aren't the passed cell"""
+        if tree_results is None:
             return []
         else:
-            cells = [self.cells[i] for i in near[0]]
+            cells = [self.cells[i] for i in tree_results[0]]
             cells = [c for c in cells if c is not cell]
             return cells
