@@ -3,6 +3,7 @@
 
 import copy
 import uuid
+import math
 import numpy as np
 
 from .utils.encoding import NumpyToCore
@@ -75,7 +76,7 @@ class Cell:
             id=uuid.uuid4().hex[:6],
             parent=None,
         )
-        defaults["dir"] /= np.linalg.norm(defaults["dir"])
+        defaults["dir"] /= norm(defaults["dir"])
         # Update the dictionary
         self._allowed = list(defaults.keys())
         defaults.update(kwargs)
@@ -114,13 +115,13 @@ class Cell:
         This is implicitly calculated relative to a rate per timestep.
         """
         m_50, steep = self.mitosis_50, self.mitosis_steepness
-        p = 0.5 * (1 + np.tanh((self.radius - m_50) / steep))
+        p = 0.5 * (1 + math.tanh((self.radius - m_50) / steep))
         return np.random.rand() < p
 
     def _divide(self):
         """Undergo mitosis, creating two daughter cells"""
         # Conserve volume
-        rad = self.radius / np.sqrt(2)
+        rad = self.radius / math.sqrt(2)
         # One daughter goes in direction parent was, one in opposite
         dirs = self.dir, -self.dir
         locs = [self.loc + dir * rad for dir in dirs]
