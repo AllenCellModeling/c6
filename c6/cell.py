@@ -71,7 +71,7 @@ class Cell:
             max_speed=1.0,
             speed_dispersion=0.03,
             direction_dispersion=0.1,
-            repel_limit=0.1,
+            repel_limit=1.0,
             id=uuid.uuid4().hex[:6],
             parent=None,
         )
