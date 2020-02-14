@@ -1,0 +1,7 @@
+c6
+==
+
+.. toctree::
+   :maxdepth: 4
+
+   c6

@@ -1,0 +1,22 @@
+c6.bin package
+==============
+
+Submodules
+----------
+
+c6.bin.my\_example module
+-------------------------
+
+.. automodule:: c6.bin.my_example
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: c6.bin
+   :members:
+   :undoc-members:
+   :show-inheritance:

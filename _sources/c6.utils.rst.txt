@@ -1,0 +1,38 @@
+c6.utils package
+================
+
+Submodules
+----------
+
+c6.utils.encoding module
+------------------------
+
+.. automodule:: c6.utils.encoding
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+c6.utils.math module
+--------------------
+
+.. automodule:: c6.utils.math
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+c6.utils.serialize module
+-------------------------
+
+.. automodule:: c6.utils.serialize
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: c6.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

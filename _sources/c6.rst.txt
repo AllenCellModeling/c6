@@ -1,0 +1,54 @@
+c6 package
+==========
+
+Subpackages
+-----------
+
+.. toctree::
+
+   c6.bin
+   c6.utils
+
+Submodules
+----------
+
+c6.cell module
+--------------
+
+.. automodule:: c6.cell
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+c6.example module
+-----------------
+
+.. automodule:: c6.example
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+c6.plot module
+--------------
+
+.. automodule:: c6.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+c6.space module
+---------------
+
+.. automodule:: c6.space
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: c6
+   :members:
+   :undoc-members:
+   :show-inheritance:
