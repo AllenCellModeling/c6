@@ -11,9 +11,9 @@ from .. import space
 from .encoding import JSONNumpyPandasEncoder
 
 
-class RunLog:
+class CSVLog:
     def __init__(self, fn=None, header=None):
-        """Log the output of a run as we go
+        """Log the output of a run as we go in a tidy CSV
 
         Parameters
         ----------
@@ -80,9 +80,74 @@ class RunLog:
             self.file.write(",".join(self._format(v) for v in vals) + "\n")
 
     def close(self):
+        if not self.file.closed:
+            self.file.close()
+
+    def __del__(self):
+        self.close()
+
+
+class SimulariumLog:
+    def __init__(self, fn=None):
+        """Log the output of the run to a Simularium compatible JSON format
+
+        Parameters
+        ----------
+        fn: str
+            filename to log output to, will have '.simularium' appended if not
+            present
+        """
+        if fn is None:
+            fn = "./temp.simularium"
+        if not fn.endswith(".simularium"):
+            fn += ".simularium"
+        self.fn = fn
+        self.file = open(fn, "w")
+        self.file.writelines(["{", '"bundleData": ['])
+        self._uuids = {}
+        self._length = 1
+
+    def _to_id(self, uuid):
+        """Add the UUID if it is new, return ID uuid maps to"""
+        if uuid not in self._uuids:
+            self._uuids[uuid] = len(self._uuids) + 1
+        return self._uuids[uuid]
+
+    def _cell_to_vec(self, cell):
+        "Transform a cell to a vector for inclusion in the data array"
+        cell_id = self._to_id(cell.id)
+        x, y, r = cell.loc[0], cell.loc[1], cell.radius
+        return f"1000,{cell_id},{x:.4f},{y:.4f},0,0,0,0,{r:.4f},0"
+
+    def log_space(self, space):
+        """Log space at a timepoint"""
+        assert not self.file.closed, "Log closed"
+        cell_vecs = ",".join([self._cell_to_vec(cell) for cell in space.cells])
+        if self._length != 1:
+            self.file.write(",")
+        self.file.writelines(
+            [
+                "{",
+                f'"data": [{cell_vecs}],'
+                f'"frameNumber": {self._length},'
+                f'"msgType":1,'
+                f'"time": {self._length}'
+                "}",
+            ]
+        )
+        self._length += 1
+
+    def close(self):
+        """Terminate the JSON and close the file"""
+        if self.file.closed:
+            return
+        self.file.writelines(
+            ["],", f'"bundleSize":{self._length-1},', '"bundleStart":0', "}"]
+        )
         self.file.close()
 
     def __del__(self):
+        """Close log before releasing memory"""
         self.close()
 
 
