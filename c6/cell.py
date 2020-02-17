@@ -123,7 +123,7 @@ class Cell:
         """
         # Find n nearest cells and sum of distances
         nearest = self._n_nearest_cells(self.inhibition_n)
-        if len(nearest) != self.inhibition_n:  #  no space or no other cells
+        if len(nearest) != self.inhibition_n:  # no space or no other cells
             return 1.0
         distance = sum(
             [norm(oc.loc - self.loc) - oc.radius - self.radius for oc in nearest]

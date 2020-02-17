@@ -4,7 +4,7 @@
 import numpy as np
 import sklearn.neighbors
 
-from .plot import plot_cells, animate
+from .plot import plot_cells
 
 
 class Space:

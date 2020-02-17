@@ -13,5 +13,5 @@ def get_module_version():
     return __version__
 
 
-from .space import Space
-from .cell import Cell
+from .space import Space  # noqa: F401
+from .cell import Cell  # noqa: F401
