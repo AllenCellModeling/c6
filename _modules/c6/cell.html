@@ -92,13 +92,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../c6.html">c6 package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../c6.bin.html">c6.bin package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../c6.utils.html">c6.utils package</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#module-c6.cell">c6.cell module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../c6.html#module-c6.example">c6.example module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#module-c6.plot">c6.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#module-c6.space">c6.space module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../c6.html#module-c6">Module contents</a></li>
@@ -296,7 +294,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Find n nearest cells and sum of distances</span>
         <span class="n">nearest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_nearest_cells</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inhibition_n</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nearest</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inhibition_n</span><span class="p">:</span>  <span class="c1">#  no space or no other cells</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nearest</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inhibition_n</span><span class="p">:</span>  <span class="c1"># no space or no other cells</span>
             <span class="k">return</span> <span class="mf">1.0</span>
         <span class="n">distance</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span><span class="n">norm</span><span class="p">(</span><span class="n">oc</span><span class="o">.</span><span class="n">loc</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="o">-</span> <span class="n">oc</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="k">for</span> <span class="n">oc</span> <span class="ow">in</span> <span class="n">nearest</span><span class="p">]</span>

@@ -6,7 +6,6 @@ Subpackages
 
 .. toctree::
 
-   c6.bin
    c6.utils
 
 Submodules
@@ -16,14 +15,6 @@ c6.cell module
 --------------
 
 .. automodule:: c6.cell
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-c6.example module
------------------
-
-.. automodule:: c6.example
    :members:
    :undoc-members:
    :show-inheritance:
