@@ -185,9 +185,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="Space.plot"><a class="viewcode-back" href="../../c6.html#c6.space.Space.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<div class="viewcode-block" id="Space.plot"><a class="viewcode-back" href="../../c6.html#c6.space.Space.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Quick plot cells onto a provided matplotlib axis&quot;&quot;&quot;</span>
-        <span class="n">plot_cells</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">plot_cells</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Space.add_cell"><a class="viewcode-back" href="../../c6.html#c6.space.Space.add_cell">[docs]</a>    <span class="k">def</span> <span class="nf">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add cell and regenerate distance tree&quot;&quot;&quot;</span>
