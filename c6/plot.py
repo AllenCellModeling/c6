@@ -9,7 +9,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 
 
-def plot_cells(cells, ax):
+def plot_cells(cells, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots(1, 1)
+        x, y = [c.loc[0] for c in cells], [c.loc[1] for c in cells]
+        xlim = np.min(x) - 10, np.max(x) + 10
+        ylim = np.min(y) - 10, np.max(y) + 10
+        ax.set(xlim=xlim, ylim=ylim, aspect=1)
     for cell in cells:
         if hasattr(cell, "_patches") and cell._patches[0] in ax.patches:
             pe, pc = cell._patches
@@ -24,6 +30,7 @@ def plot_cells(cells, ax):
             pc = ax.add_patch(cp(loc, 0.2 * r, facecolor=color))
             cell._patches = [pe, pc]
             cell.remove = pop_patch_dec(cell.remove, ax.patches)
+    return ax
 
 
 def pop_patch_dec(remove_func, patches):

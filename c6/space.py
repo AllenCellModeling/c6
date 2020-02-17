@@ -14,9 +14,9 @@ class Space:
         self.cells = []
         self.timestep = 0
 
-    def plot(self, ax):
+    def plot(self, ax=None):
         """Quick plot cells onto a provided matplotlib axis"""
-        plot_cells(self.cells, ax)
+        return plot_cells(self.cells, ax)
 
     def add_cell(self, cell):
         """Add cell and regenerate distance tree"""
