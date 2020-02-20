@@ -11,7 +11,7 @@ import pytest
 
 @pytest.fixture
 def data_dir() -> Path:
-    return Path(__file__).parent / "data"
+    return Path(__file__).parent.parent / "data"
 
 
 @pytest.fixture
