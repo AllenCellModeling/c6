@@ -1,4 +1,4 @@
-# c6 (Circular Center-based Cell Colony Creation and Clustering)
+# c6 (Circular Center-based Cell Colony Creation and Clustering) <img src="docs/imgs/logo.png" width="250" title="c6" alt="c6" align="right" vspace = "50">
 
 [![Build Status](https://github.com/AllenCellModeling/c6/workflows/Build%20Master/badge.svg)](https://github.com/AllenCellModeling/c6/actions)
 [![Documentation](https://github.com/AllenCellModeling/c6/workflows/Documentation/badge.svg)](https://AllenCellModeling.github.io/c6)
@@ -15,13 +15,14 @@ C6 is a toy center-based model of the initial clustering that occurs as a cells 
 - [x] Cells sense each other with tunable strength and distances
 - [x] Cells grow at tunable rates
 - [x] Cells divide at tunable sizes
-- [ ] Cells' growth is contact inhibited
+- [x] Cells' growth is contact inhibited
 - [x] Runs are launched from stored initial conditions
 - [x] Runs are selectable as deterministic or stochastic 
 - [x] Runs are logged to tidy data file
 - [x] Run state is visualized
 - [x] You can save run states out to pretty MP4s
 - [ ] Summary statistics are available for probing run logs
+- [ ] Easy run profiling
 
 ## Quick Start
 ```python
