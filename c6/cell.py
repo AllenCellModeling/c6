@@ -15,6 +15,7 @@ class Cell:
 
     def __init__(self, space=None, loc=[0, 0], radius=2, **kwargs):
         """Create our circular cell.
+        Values given in µm/sec
 
         Parameters
         ==========
@@ -76,6 +77,7 @@ class Cell:
             speed_dispersion=0.03,
             direction_dispersion=0.1,
             repel_limit=1.0,
+            timestep_duration=60,
             id=uuid.uuid4().hex[:6],
             parent=None,
         )
@@ -84,6 +86,7 @@ class Cell:
         self._allowed = list(defaults.keys())
         defaults.update(kwargs)
         self.__dict__.update((k, v) for k, v in defaults.items() if k in self._allowed)
+        self._prior_loc = loc  # No history for this cell yet
         # Add cell to space
         if space is not None:
             space.add_cell(self)
@@ -201,8 +204,9 @@ class Cell:
 
     def _accelerate(self):
         """Perturb the speed a bit"""
-        self.speed += np.random.normal(0, self.speed_dispersion)
-        self.speed = clip(self.speed, 0, self.max_speed)
+        speed = norm(self.loc - self._prior_loc) / self.timestep_duration
+        speed += np.random.normal(0, self.speed_dispersion)
+        self.speed = clip(speed, -self.max_speed, self.max_speed)
 
     def _ljf(self, dist):
         """Lennard-Jones force (derivative of Lennard-Jones potential"""
@@ -241,6 +245,7 @@ class Cell:
         self._steer()
         self._accelerate()
         # Calculate the current movement vector and move
+        self._prior_loc = self.loc
         self.loc += self.speed * self.dir
         # Apply exclusion
         self._exclude()
