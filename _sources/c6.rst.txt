@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+   c6.data
    c6.utils
 
 Submodules

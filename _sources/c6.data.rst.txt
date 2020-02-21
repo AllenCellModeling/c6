@@ -1,0 +1,10 @@
+c6.data package
+===============
+
+Module contents
+---------------
+
+.. automodule:: c6.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
