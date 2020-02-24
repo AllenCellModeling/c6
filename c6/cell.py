@@ -220,8 +220,8 @@ class Cell:
         vec = other_cell.loc - self.loc
         dist = norm(vec)
         mag = other_cell._ljf(dist - self.radius) + self._ljf(dist - other_cell.radius)
-        mag = clip(mag, -self.repel_limit, self.repel_limit)
-        f_vec = mag * vec / dist
+        clip_mag = clip(mag, -self.repel_limit, self.repel_limit)
+        f_vec = clip_mag * vec / dist
         self.loc += f_vec
         if mag > self.repel_limit or mag < -self.repel_limit:
             self._repel(other_cell)
