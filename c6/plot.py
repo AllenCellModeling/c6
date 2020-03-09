@@ -24,7 +24,7 @@ def plot_cells(cells, ax=None):
             pc.xy = cell.loc
         else:
             loc, r = cell.loc, cell.radius
-            color = plt.cm.hsv(np.random.random())
+            color = plt.cm.tab10(np.random.random())
             cp = plt.matplotlib.patches.CirclePolygon
             pe = ax.add_patch(cp(loc, r, edgecolor=color, fill=False))
             pc = ax.add_patch(cp(loc, 0.2 * r, facecolor=color))
