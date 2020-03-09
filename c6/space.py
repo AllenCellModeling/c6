@@ -35,7 +35,7 @@ class Space:
     def step(self):
         """Tell every cell to go through one time step"""
         self._generate_distance_map()
-        for cell in self.cells:
+        for cell in np.random.permutation(self.cells):
             cell.step()
         self.timestep += 1
 
