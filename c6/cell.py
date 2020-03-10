@@ -222,7 +222,10 @@ class Cell:
         """Two cells shouldn't overlap"""
         vec = other_cell.loc - self.loc
         dist = norm(vec)
-        mag = other_cell._ljf(dist - self.radius) + self._ljf(dist - other_cell.radius)
+        rad_mult = 1.6  # b/c comparing to nucleus
+        mag = other_cell._ljf(dist - rad_mult * self.radius) + self._ljf(
+            dist - rad_mult * other_cell.radius
+        )
         clip_mag = clip(mag, -self.repel_limit, self.repel_limit)
         f_vec = clip_mag * vec / dist
         self.loc += f_vec
