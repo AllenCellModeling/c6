@@ -51,6 +51,8 @@ class Cell:
 
         .. _exponential decay: http://mathworld.wolfram.com/ExponentialDecay.html
         """
+        # Perform type conversions, in case passed as ints
+        loc = np.array(loc).astype(np.float)
         # Set default values
         defaults = dict(
             space=space,
