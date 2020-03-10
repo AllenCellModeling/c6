@@ -206,7 +206,7 @@ class Cell:
 
     def _accelerate(self):
         """Perturb the speed a bit"""
-        speed = norm(self.loc - self._prior_loc) / self.timestep_duration
+        speed = self.speed
         speed += np.random.normal(0, self.speed_dispersion)
         self.speed = clip(speed, -self.max_speed, self.max_speed)
 
