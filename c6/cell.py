@@ -149,13 +149,13 @@ class Cell:
         """Undergo mitosis, creating two daughter cells"""
         # Conserve volume
         rad = self.radius / math.sqrt(2)
-        # One daughter goes in direction parent was, one in opposite
-        dirs = self.dir, -self.dir
-        locs = [self.loc + dir * rad for dir in dirs]
-        dicts = [
-            dict(age=0, radius=rad, parent=self.id, dir=dir, loc=loc)
-            for dir, loc in zip(dirs, locs)
-        ]
+        # Daughters displaced orthogonally from parent's direction of travel
+        displacement = (
+            np.array((-self.dir[1], self.dir[0])),
+            np.array((self.dir[1], -self.dir[0])),
+        )
+        locs = [self.loc + disp * rad for disp in displacement]
+        dicts = [dict(age=0, radius=rad, parent=self.id, loc=loc) for loc in locs]
         # Start with defaults from parent cell, but make daughters create new ids
         defaults = copy.copy(self.__dict__)
         defaults.pop("id")
