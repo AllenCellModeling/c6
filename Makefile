@@ -44,6 +44,7 @@ clean:  ## clean all build, python, and testing files
 	rm -fr coverage.xml
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
+	rm -fr docs/c6.*
 
 build: ## run tox / run tests and lint
 	tox
@@ -57,3 +58,12 @@ gen-docs: ## generate Sphinx HTML documentation, including API docs
 docs: ## generate Sphinx HTML documentation, including API docs, and serve to browser
 	make gen-docs
 	$(BROWSER) docs/_build/html/index.html
+
+test: ## run tests quickly with the default Python
+	py.test
+
+coverage: ## check code coverage quickly with the default Python
+	coverage run --source c6 -m pytest
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
