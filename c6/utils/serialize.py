@@ -28,6 +28,7 @@ class CSVLog:
         # Create file
         if fn is None:
             fn = "./temp.c6log"
+        fn = str(fn)  # convert if path
         if not fn.endswith(".c6log"):
             fn += ".c6log"
         self.fn = fn
@@ -99,6 +100,7 @@ class SimulariumLog:
         """
         if fn is None:
             fn = "./temp.simularium"
+        fn = str(fn)  # convert if path
         if not fn.endswith(".simularium"):
             fn += ".simularium"
         self.fn = fn
@@ -208,7 +210,9 @@ def write_starting_conditions(
         {key: cell.__dict__[key] for key in cell_keys} for cell in space.cells
     ]
     # Write out json
+    conditions_filename = str(conditions_filename)  # convert if path
     if not conditions_filename.endswith(".initial.json"):
         conditions_filename += ".initial.json"
     with open(conditions_filename, "w") as conditions_file:
         json.dump(start_dict, conditions_file, cls=JSONNumpyPandasEncoder)
+    return conditions_filename
