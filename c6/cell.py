@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import uuid
 import math
 import numpy as np
 
 from .utils.encoding import NumpyToCore
 from .utils.math import clip, norm
+from .utils.nameing import name
 
 
 class Cell:
@@ -45,7 +45,7 @@ class Cell:
             how far a cell can move to avoid overlap, tuned along with adhesion to
             avoid oscillation
         id: int or str
-            unique name of this cell, defaults to first 6 of a UUID
+            unique name of this cell, defaults to 6 random alphanumerics
         parent: int or str or None
             id of parent of this cell, if any
 
@@ -80,7 +80,7 @@ class Cell:
             direction_dispersion=0.1,
             repel_limit=1.0,
             timestep_duration=60,
-            id=uuid.uuid4().hex[:6],
+            id=name(6),
             parent=None,
         )
         defaults["dir"] /= norm(defaults["dir"])
