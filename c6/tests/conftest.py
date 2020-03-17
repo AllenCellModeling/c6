@@ -9,11 +9,28 @@ from pathlib import Path
 import pytest
 
 
+# Set up immutable or globally needed parameters
+DATADIR = Path(__file__).parent.parent / "data"
+INITPATH = DATADIR / "small.initial.json"
+SPACE = load_starting_conditions(INITPATH)
+
+
 @pytest.fixture
 def data_dir() -> Path:
-    return Path(__file__).parent.parent / "data"
+    return DATADIR
 
 
 @pytest.fixture
-def small_space(data_dir):
-    return load_starting_conditions(data_dir / "small.initial.json")
+def small_initial_condition_path() -> Path:
+    return INITPATH
+
+
+@pytest.fixture
+def small_space(small_initial_condition_path):
+    return load_starting_conditions(small_initial_condition_path)
+
+
+@pytest.fixture(params=SPACE.cells)
+def cell(request):
+    """Tests accepting `cell` will be called with all cells in `SPACE`"""
+    return request.param

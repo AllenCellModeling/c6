@@ -5,6 +5,7 @@ import numpy as np
 import sklearn.neighbors
 
 from .plot import plot_cells
+from .utils.math import clip
 
 
 class Space:
@@ -50,6 +51,7 @@ class Space:
         """The n nearest cells to a given cell
         Must call `step` first to generate search tree.
         """
+        n = clip(n, 0, len(self.cells) - 1)
         near = self.tree.query(cell.loc.reshape(1, -1), n + 1, False)
         return self._not_original_cell(near, cell)
 

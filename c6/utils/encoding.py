@@ -37,6 +37,7 @@ class JSONNumpyPandasEncoder(json.JSONEncoder):
 
 
 def NumpyToCore(obj_to_encode):
+    """Convert numpy objects to standard python objects"""
     # Numpy objects report themselves oddly in error logs, but this generic
     # type mostly captures what we're after.
     if isinstance(obj_to_encode, np.generic):
@@ -45,5 +46,13 @@ def NumpyToCore(obj_to_encode):
     # ndarray -> list, pretty straightforward.
     if isinstance(obj_to_encode, np.ndarray):
         return obj_to_encode.tolist()
+
+    return obj_to_encode
+
+
+def CoreToNumpy(obj_to_encode):
+    """Convert lists back to numpy arrays"""
+    if isinstance(obj_to_encode, list):
+        return np.array(obj_to_encode)
 
     return obj_to_encode

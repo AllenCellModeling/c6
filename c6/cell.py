@@ -5,7 +5,7 @@ import copy
 import math
 import numpy as np
 
-from .utils.encoding import NumpyToCore
+from .utils.encoding import NumpyToCore, CoreToNumpy
 from .utils.math import clip, norm
 from .utils.nameing import name
 
@@ -99,7 +99,8 @@ class Cell:
 
     def _from_serializeable_dict(self, props):
         """Set values from the passed property dict"""
-        self.__dict__.update((k, v) for k, v in props.items() if k in self._allowed)
+        kv = ((k, CoreToNumpy(v)) for k, v in props.items())
+        self.__dict__.update((k, v) for k, v in kv if k in self._allowed)
 
     def _grow(self):
         """Get bigger according to current/min/max sizes, growth rate, and growth variance.
