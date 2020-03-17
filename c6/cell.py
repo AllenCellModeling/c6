@@ -88,7 +88,6 @@ class Cell:
         self._allowed = list(defaults.keys())
         defaults.update(kwargs)
         self.__dict__.update((k, v) for k, v in defaults.items() if k in self._allowed)
-        self._prior_loc = loc  # No history for this cell yet
         # Add cell to space
         if space is not None:
             space.add_cell(self)
@@ -204,7 +203,7 @@ class Cell:
     def _accelerate(self):
         """Perturb the speed a bit"""
         speed = self.speed
-        speed += np.random.normal(0, self.speed_dispersion)
+        speed += np.random.normal(0, self.speed_dispersion * self.timestep_duration)
         self.speed = clip(speed, -self.max_speed, self.max_speed)
 
     def _ljf(self, dist):
@@ -235,7 +234,7 @@ class Cell:
 
     def step(self):
         # Age and grow
-        self.age += 1
+        self.age += self.timestep_duration
         self._grow()
         if self._undergo_mitosis():
             self._divide()
@@ -244,7 +243,6 @@ class Cell:
         self._steer()
         self._accelerate()
         # Calculate the current movement vector and move
-        self._prior_loc = self.loc
-        self.loc += self.speed * self.dir
+        self.loc += self.speed * self.dir * self.timestep_duration
         # Apply exclusion
         self._exclude()
