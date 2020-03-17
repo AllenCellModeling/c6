@@ -233,9 +233,9 @@
             <span class="nb">dir</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>  <span class="c1"># gets normed below</span>
             <span class="n">speed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)),</span>
             <span class="n">age</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">growth_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">growth_rate</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">,</span>  <span class="c1"># radii/sec</span>
             <span class="n">growth_var</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">min_growth</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+            <span class="n">min_growth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">min_radius</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
             <span class="n">max_radius</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
             <span class="n">inhibition_n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
@@ -247,8 +247,8 @@
             <span class="n">influence_max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
             <span class="n">influence_decay</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">adhesion</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-            <span class="n">max_speed</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="n">speed_dispersion</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+            <span class="n">max_speed</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>  <span class="c1"># µm/sec</span>
+            <span class="n">speed_dispersion</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
             <span class="n">direction_dispersion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">repel_limit</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
             <span class="n">timestep_duration</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
@@ -260,7 +260,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_prior_loc</span> <span class="o">=</span> <span class="n">loc</span>  <span class="c1"># No history for this cell yet</span>
         <span class="c1"># Add cell to space</span>
         <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">space</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -278,17 +277,13 @@
         <span class="sd">&quot;&quot;&quot;Get bigger according to current/min/max sizes, growth rate, and growth variance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Local copies of variables for readability</span>
-        <span class="n">r</span><span class="p">,</span> <span class="n">r_min</span><span class="p">,</span> <span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_radius</span>
-        <span class="n">g_rate</span><span class="p">,</span> <span class="n">g_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_var</span>
-        <span class="c1"># Benavides: within size, grow, out of size, the law (of min growth)</span>
-        <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">r_min</span> <span class="ow">or</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">r_max</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">r</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_growth</span>
+        <span class="n">rate</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_var</span>
         <span class="c1"># Allow variability in growth rates</span>
-        <span class="k">if</span> <span class="n">g_var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">g_rate</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">g_rate</span> <span class="o">*</span> <span class="n">g_var</span><span class="p">)</span>
-        <span class="c1"># Calculate change and add to current radius</span>
-        <span class="n">change</span> <span class="o">=</span> <span class="n">g_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">r_min</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">r_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">r_max</span> <span class="o">-</span> <span class="n">r_min</span><span class="p">))</span>
-        <span class="n">change</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">change</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_growth</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rate</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span>
+        <span class="c1"># Calculate fractional change and add to current radius</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="n">change</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_duration</span>
         <span class="n">change</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contact_inhibit</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">+=</span> <span class="n">change</span>
 
@@ -380,7 +375,7 @@
     <span class="k">def</span> <span class="nf">_accelerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perturb the speed a bit&quot;&quot;&quot;</span>
         <span class="n">speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
-        <span class="n">speed</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_dispersion</span><span class="p">)</span>
+        <span class="n">speed</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_dispersion</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_duration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_ljf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
@@ -411,7 +406,7 @@
 
 <div class="viewcode-block" id="Cell.step"><a class="viewcode-back" href="../../c6.html#c6.cell.Cell.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Age and grow</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_grow</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undergo_mitosis</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_divide</span><span class="p">()</span>
@@ -420,8 +415,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_steer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_accelerate</span><span class="p">()</span>
         <span class="c1"># Calculate the current movement vector and move</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_prior_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_duration</span>
         <span class="c1"># Apply exclusion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude</span><span class="p">()</span></div></div>
 </pre></div>
