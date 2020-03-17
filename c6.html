@@ -196,6 +196,7 @@
 <li class="toctree-l2"><a class="reference internal" href="c6.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="c6.utils.html#module-c6.utils.encoding">c6.utils.encoding module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="c6.utils.html#module-c6.utils.math">c6.utils.math module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="c6.utils.html#module-c6.utils.nameing">c6.utils.nameing module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="c6.utils.html#module-c6.utils.serialize">c6.utils.serialize module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="c6.utils.html#module-c6.utils">Module contents</a></li>
 </ul>
@@ -213,7 +214,8 @@
 <em class="property">class </em><code class="sig-prename descclassname">c6.cell.</code><code class="sig-name descname">Cell</code><span class="sig-paren">(</span><em class="sig-param">space=None, loc=[0, 0], radius=2, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/c6/cell.html#Cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#c6.cell.Cell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A circular cell that meanders about</p>
-<p>Create our circular cell.</p>
+<p>Create our circular cell.
+Values given in µm/sec</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -230,7 +232,7 @@
 <li><p><strong>direction_dispersion</strong> (<em>float</em>) – how strong our directional memory is</p></li>
 <li><p><strong>repel_limit</strong> (<em>float</em>) – how far a cell can move to avoid overlap, tuned along with adhesion to
 avoid oscillation</p></li>
-<li><p><strong>id</strong> (<em>int or str</em>) – unique name of this cell, defaults to first 6 of a UUID</p></li>
+<li><p><strong>id</strong> (<em>int or str</em>) – unique name of this cell, defaults to 6 random alphanumerics</p></li>
 <li><p><strong>parent</strong> (<em>int or str or None</em>) – id of parent of this cell, if any</p></li>
 <li><p><strong>.. _exponential decay</strong> (<em>http://mathworld.wolfram.com/ExponentialDecay.html</em>)</p></li>
 </ul>

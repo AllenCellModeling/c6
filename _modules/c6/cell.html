@@ -174,12 +174,12 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.utils.encoding</span> <span class="kn">import</span> <span class="n">NumpyToCore</span>
+<span class="kn">from</span> <span class="nn">.utils.encoding</span> <span class="kn">import</span> <span class="n">NumpyToCore</span><span class="p">,</span> <span class="n">CoreToNumpy</span>
 <span class="kn">from</span> <span class="nn">.utils.math</span> <span class="kn">import</span> <span class="n">clip</span><span class="p">,</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">.utils.nameing</span> <span class="kn">import</span> <span class="n">name</span>
 
 
 <div class="viewcode-block" id="Cell"><a class="viewcode-back" href="../../c6.html#c6.cell.Cell">[docs]</a><span class="k">class</span> <span class="nc">Cell</span><span class="p">:</span>
@@ -187,6 +187,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create our circular cell.</span>
+<span class="sd">        Values given in µm/sec</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ==========</span>
@@ -216,12 +217,14 @@
 <span class="sd">            how far a cell can move to avoid overlap, tuned along with adhesion to</span>
 <span class="sd">            avoid oscillation</span>
 <span class="sd">        id: int or str</span>
-<span class="sd">            unique name of this cell, defaults to first 6 of a UUID</span>
+<span class="sd">            unique name of this cell, defaults to 6 random alphanumerics</span>
 <span class="sd">        parent: int or str or None</span>
 <span class="sd">            id of parent of this cell, if any</span>
 
 <span class="sd">        .. _exponential decay: http://mathworld.wolfram.com/ExponentialDecay.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Perform type conversions, in case passed as ints</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
         <span class="c1"># Set default values</span>
         <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
@@ -248,7 +251,8 @@
             <span class="n">speed_dispersion</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
             <span class="n">direction_dispersion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
             <span class="n">repel_limit</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="nb">id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span>
+            <span class="n">timestep_duration</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">name</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span>
             <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">norm</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">])</span>
@@ -256,6 +260,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prior_loc</span> <span class="o">=</span> <span class="n">loc</span>  <span class="c1"># No history for this cell yet</span>
         <span class="c1"># Add cell to space</span>
         <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">space</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -266,7 +271,8 @@
 
     <span class="k">def</span> <span class="nf">_from_serializeable_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">props</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set values from the passed property dict&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">props</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="p">)</span>
+        <span class="n">kv</span> <span class="o">=</span> <span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">CoreToNumpy</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">props</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kv</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_grow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get bigger according to current/min/max sizes, growth rate, and growth variance.</span>
@@ -316,13 +322,13 @@
         <span class="sd">&quot;&quot;&quot;Undergo mitosis, creating two daughter cells&quot;&quot;&quot;</span>
         <span class="c1"># Conserve volume</span>
         <span class="n">rad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-        <span class="c1"># One daughter goes in direction parent was, one in opposite</span>
-        <span class="n">dirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span>
-        <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+</span> <span class="nb">dir</span> <span class="o">*</span> <span class="n">rad</span> <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">]</span>
-        <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">dict</span><span class="p">(</span><span class="n">age</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">rad</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">)</span>
-            <span class="k">for</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">loc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="n">locs</span><span class="p">)</span>
-        <span class="p">]</span>
+        <span class="c1"># Daughters displaced orthogonally from parent&#39;s direction of travel</span>
+        <span class="n">displacement</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+        <span class="p">)</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+</span> <span class="n">disp</span> <span class="o">*</span> <span class="n">rad</span> <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">displacement</span><span class="p">]</span>
+        <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">age</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">rad</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">)</span> <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">locs</span><span class="p">]</span>
         <span class="c1"># Start with defaults from parent cell, but make daughters create new ids</span>
         <span class="n">defaults</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
         <span class="n">defaults</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
@@ -373,8 +379,9 @@
 
     <span class="k">def</span> <span class="nf">_accelerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perturb the speed a bit&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_dispersion</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">)</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
+        <span class="n">speed</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_dispersion</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_speed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_ljf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Lennard-Jones force (derivative of Lennard-Jones potential&quot;&quot;&quot;</span>
@@ -388,8 +395,8 @@
         <span class="n">vec</span> <span class="o">=</span> <span class="n">other_cell</span><span class="o">.</span><span class="n">loc</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">loc</span>
         <span class="n">dist</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
         <span class="n">mag</span> <span class="o">=</span> <span class="n">other_cell</span><span class="o">.</span><span class="n">_ljf</span><span class="p">(</span><span class="n">dist</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ljf</span><span class="p">(</span><span class="n">dist</span> <span class="o">-</span> <span class="n">other_cell</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
-        <span class="n">mag</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span><span class="p">)</span>
-        <span class="n">f_vec</span> <span class="o">=</span> <span class="n">mag</span> <span class="o">*</span> <span class="n">vec</span> <span class="o">/</span> <span class="n">dist</span>
+        <span class="n">clip_mag</span> <span class="o">=</span> <span class="n">clip</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span><span class="p">)</span>
+        <span class="n">f_vec</span> <span class="o">=</span> <span class="n">clip_mag</span> <span class="o">*</span> <span class="n">vec</span> <span class="o">/</span> <span class="n">dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+=</span> <span class="n">f_vec</span>
         <span class="k">if</span> <span class="n">mag</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span> <span class="ow">or</span> <span class="n">mag</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">repel_limit</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_repel</span><span class="p">(</span><span class="n">other_cell</span><span class="p">)</span>
@@ -413,6 +420,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_steer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_accelerate</span><span class="p">()</span>
         <span class="c1"># Calculate the current movement vector and move</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prior_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loc</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span>
         <span class="c1"># Apply exclusion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude</span><span class="p">()</span></div></div>

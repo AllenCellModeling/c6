@@ -20,6 +20,14 @@ c6.utils.math module
    :undoc-members:
    :show-inheritance:
 
+c6.utils.nameing module
+-----------------------
+
+.. automodule:: c6.utils.nameing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 c6.utils.serialize module
 -------------------------
 
