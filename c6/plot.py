@@ -29,18 +29,19 @@ def plot_cells(cells, ax=None):
             pe = ax.add_patch(cp(loc, r, edgecolor=color, fill=False))
             pc = ax.add_patch(cp(loc, 0.2 * r, facecolor=color))
             cell._patches = [pe, pc]
-            cell.remove = pop_patch_dec(cell.remove, ax.patches)
+            cell.remove = pop_patch_dec(cell, ax.patches)
     return ax
 
 
-def pop_patch_dec(remove_func, patches):
+def pop_patch_dec(cell, patches):
     """Decorate remove method so it kills that cell's patches"""
+    remove_func = cell.remove
 
     @functools.wraps(remove_func)
     def pop_and_remove(*args, **kwargs):
-        cell = remove_func.__self__
         for patch in cell._patches:
-            patches.remove(patch)
+            if patch in patches:
+                patches.remove(patch)
         return remove_func(*args, **kwargs)
 
     return pop_and_remove
