@@ -186,9 +186,6 @@ def write_starting_conditions(
         universal_keys = (
             "growth_rate",
             "growth_var",
-            "min_growth",
-            "min_radius",
-            "max_radius",
             "mitosis_50",
             "mitosis_steepness",
             "sensing",
