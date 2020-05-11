@@ -63,9 +63,6 @@ class Cell:
             age=0,
             growth_rate=2.5e-5,  # radii/sec
             growth_var=0.5,
-            min_growth=0.1,
-            min_radius=2.0,
-            max_radius=3.5,
             inhibition_n=4,
             inhibition_50=6,
             inhibition_steepness=3,
