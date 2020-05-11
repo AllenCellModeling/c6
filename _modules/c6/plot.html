@@ -201,18 +201,19 @@
             <span class="n">pe</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">cp</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
             <span class="n">pc</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">cp</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">))</span>
             <span class="n">cell</span><span class="o">.</span><span class="n">_patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">pe</span><span class="p">,</span> <span class="n">pc</span><span class="p">]</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">pop_patch_dec</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">remove</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">patches</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">pop_patch_dec</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">patches</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ax</span></div>
 
 
-<div class="viewcode-block" id="pop_patch_dec"><a class="viewcode-back" href="../../c6.html#c6.plot.pop_patch_dec">[docs]</a><span class="k">def</span> <span class="nf">pop_patch_dec</span><span class="p">(</span><span class="n">remove_func</span><span class="p">,</span> <span class="n">patches</span><span class="p">):</span>
+<div class="viewcode-block" id="pop_patch_dec"><a class="viewcode-back" href="../../c6.html#c6.plot.pop_patch_dec">[docs]</a><span class="k">def</span> <span class="nf">pop_patch_dec</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">patches</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Decorate remove method so it kills that cell&#39;s patches&quot;&quot;&quot;</span>
+    <span class="n">remove_func</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">remove</span>
 
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">remove_func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">pop_and_remove</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">cell</span> <span class="o">=</span> <span class="n">remove_func</span><span class="o">.</span><span class="vm">__self__</span>
         <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">_patches</span><span class="p">:</span>
-            <span class="n">patches</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">:</span>
+                <span class="n">patches</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">remove_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">pop_and_remove</span></div>
