@@ -61,8 +61,11 @@ class Cell:
             dir=np.random.normal(size=2),  # gets normed below
             speed=np.abs(np.random.normal(0.1, 0.01)),
             age=0,
-            growth_rate=2.5e-5,  # radii/sec
+            growth_rate=0.1,
             growth_var=0.5,
+            min_growth=0.01,
+            min_radius=2.0,
+            max_radius=3.5,
             inhibition_n=4,
             inhibition_50=6,
             inhibition_steepness=3,
@@ -72,8 +75,8 @@ class Cell:
             influence_max=10,
             influence_decay=2,
             adhesion=0.001,
-            max_speed=0.03,  # µm/sec
-            speed_dispersion=1e-4,
+            max_speed=1.0,
+            speed_dispersion=0.03,
             direction_dispersion=0.1,
             repel_limit=1.0,
             timestep_duration=60,
@@ -85,6 +88,7 @@ class Cell:
         self._allowed = list(defaults.keys())
         defaults.update(kwargs)
         self.__dict__.update((k, v) for k, v in defaults.items() if k in self._allowed)
+        self._prior_loc = loc  # No history for this cell yet
         # Add cell to space
         if space is not None:
             space.add_cell(self)
@@ -102,13 +106,17 @@ class Cell:
         """Get bigger according to current/min/max sizes, growth rate, and growth variance.
         """
         # Local copies of variables for readability
-        rate, var = self.growth_rate, self.growth_var
+        r, r_min, r_max = self.radius, self.min_radius, self.max_radius
+        g_rate, g_var = self.growth_rate, self.growth_var
+        # Benavides: within size, grow, out of size, the law (of min growth)
+        if r < r_min or r > r_max:
+            return r + self.min_growth
         # Allow variability in growth rates
-        if var is not None:
-            rate *= np.random.normal(1.0, rate * var)
-        # Calculate fractional change and add to current radius
-        rate = clip(rate, 0, np.inf)
-        change = self.radius * rate * self.timestep_duration
+        if g_var is not None:
+            g_rate *= np.random.normal(1.0, g_rate * g_var)
+        # Calculate change and add to current radius
+        change = g_rate * (r - r_min) * (1 - (r - r_min) / (r_max - r_min))
+        change = clip(change, self.min_growth, np.inf)
         change *= self._contact_inhibit()
         self.radius += change
 
@@ -200,7 +208,7 @@ class Cell:
     def _accelerate(self):
         """Perturb the speed a bit"""
         speed = self.speed
-        speed += np.random.normal(0, self.speed_dispersion * self.timestep_duration)
+        speed += np.random.normal(0, self.speed_dispersion)
         self.speed = clip(speed, -self.max_speed, self.max_speed)
 
     def _ljf(self, dist):
@@ -231,7 +239,7 @@ class Cell:
 
     def step(self):
         # Age and grow
-        self.age += self.timestep_duration
+        self.age += 1
         self._grow()
         if self._undergo_mitosis():
             self._divide()
@@ -240,6 +248,7 @@ class Cell:
         self._steer()
         self._accelerate()
         # Calculate the current movement vector and move
-        self.loc += self.speed * self.dir * self.timestep_duration
+        self._prior_loc = self.loc
+        self.loc += self.speed * self.dir
         # Apply exclusion
         self._exclude()
