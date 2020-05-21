@@ -82,6 +82,6 @@ setup(
     url="https://github.com/AllenCellModeling/c6",
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="0.3.2",
+    version="0.4.0",
     zip_safe=False,
 )
