@@ -44,6 +44,8 @@ class Cell:
         repel_limit: float
             how far a cell can move to avoid overlap, tuned along with adhesion to
             avoid oscillation
+        rad_mult: float
+            cell-to-nuclear radius ratio, used for repulsion
         id: int or str
             unique name of this cell, defaults to 6 random alphanumerics
         parent: int or str or None
@@ -66,6 +68,7 @@ class Cell:
             min_growth=0.01,
             min_radius=2.0,
             max_radius=3.5,
+            rad_mult=1.0,
             inhibition_n=4,
             inhibition_50=6,
             inhibition_steepness=3,
@@ -222,7 +225,9 @@ class Cell:
         """Two cells shouldn't overlap"""
         vec = other_cell.loc - self.loc
         dist = norm(vec)
-        mag = other_cell._ljf(dist - self.radius) + self._ljf(dist - other_cell.radius)
+        r_eff = self.rad_mult * self.radius  # effective radius
+        other_r_eff = other_cell.rad_mult * other_cell.radius
+        mag = other_cell._ljf(dist - r_eff) + self._ljf(dist - other_r_eff)
         clip_mag = clip(mag, -self.repel_limit, self.repel_limit)
         f_vec = clip_mag * vec / dist
         self.loc += f_vec
